@@ -14,9 +14,11 @@
 
 <body>
     <h1>Albums</h1>
-    <a href="AlbumDetails.php">Add a new Album</a>
 
     <?php
+        session_start();
+        if (!empty($_SESSION['userID']))
+           echo '<a href="AlbumDetails.php">Add a new Album</a>';
 
         //step 1 - connect to the database
         $conn = new PDO('mysql:host=localhost;dbname=php',
@@ -40,19 +42,30 @@
             <tr><th>Title</th>
                 <th>Year</th>
                 <th>Artist</th>
-                <th>Genre</th>
-                <th>Edit</th>
-                <th>Delete</th><tr>';
+                <th>Genre</th>';
+
+        //do not show edit/delete features if the user is not logged in
+        if (!empty($_SESSION['userID'])){
+            echo '<th>Edit</th>
+                <th>Delete</th>';
+        }
+
+        echo '<tr>';
+
 
         foreach($albums as $album)
         {
             echo '<tr><td>'.$album['title'].'</td>
                       <td>'.$album['year'].'</td>
                       <td>'.$album['artist'].'</td>
-                      <td>'.$album['genre'].'</td>
-                      <td><a href="AlbumDetails.php?albumid='.$album['albumID'].'"class="btn btn-primary">Edit</a></td>
-                      <td><a href="deleteAlbum.php?albumid='.$album['albumID'].'" class="btn btn-danger confirmation">Delete</a></td>
-                      </tr>';
+                      <td>'.$album['genre'].'</td>';
+
+            if (!empty($_SESSION['userID'])){
+                echo '<td><a href="AlbumDetails.php?albumid='.$album['albumID'].'"class="btn btn-primary">Edit</a></td>
+                      <td><a href="deleteAlbum.php?albumid='.$album['albumID'].'" class="btn btn-danger confirmation">Delete</a></td>';
+            }
+
+            echo '</tr>';
         }
 
         echo '</table>';
@@ -70,4 +83,5 @@
 
 <!-- custom js -->
 <script src="js/app.js"></script>
+
 </html>
